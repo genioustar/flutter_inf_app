@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_inf_app/common/component/custom_text_form_field.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,10 +14,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Container(),
+      home: const Scaffold(
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [CustomTextFormField()],
+        ),
+      ),
     );
   }
 }
