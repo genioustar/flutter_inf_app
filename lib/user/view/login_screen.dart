@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inf_app/common/component/custom_text_form_field.dart';
 import 'package:flutter_inf_app/common/component/layout/default_layout.dart';
@@ -8,6 +12,15 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dio = Dio();
+
+    // localhost for android emulator and ios simulator
+    const emulatorIp = '10.0.2.2:8099';
+    const simulatorIp = '127.0.0.1:8099';
+
+    // 모바일 디바이스에 따라서 다른 ip를 사용
+    final ip = Platform.isIOS ? simulatorIp : emulatorIp;
+
     return DefaultLayout(
       widget: SingleChildScrollView(
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -42,14 +55,41 @@ class LoginScreen extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: PRIMARY_COLOR,
                   ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    // id:pw
+                    const rawString = 'test@gmail.com:testtest';
+                    // utf8, base64 인코딩
+                    Codec<String, String> stringToBase64 = utf8.fuse(base64);
+                    final token = stringToBase64.encode(rawString);
+                    final resp = await dio.post(
+                      'http://$ip/auth/login',
+                      options: Options(
+                        headers: {
+                          HttpHeaders.authorizationHeader: 'Basic $token'
+                        },
+                      ),
+                    );
+                    print(resp.data);
+                  },
                   child: const Text(
                     '로그인',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    const refreshToken = '31231231234555';
+                    final resp = await dio.post(
+                      'http://$ip/auth/token',
+                      options: Options(
+                        headers: {
+                          HttpHeaders.authorizationHeader:
+                              'Bearer $refreshToken'
+                        },
+                      ),
+                    );
+                    print(resp.data);
+                  },
                   style: TextButton.styleFrom(
                     foregroundColor: PRIMARY_COLOR,
                   ),

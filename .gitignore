@@ -44,3 +44,6 @@ app.*.map.json
 
 # history folder
 .history
+
+# gnerated plugin 제거
+generated_*
