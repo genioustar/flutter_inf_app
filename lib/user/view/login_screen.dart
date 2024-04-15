@@ -6,9 +6,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inf_app/common/component/custom_text_form_field.dart';
 import 'package:flutter_inf_app/common/component/layout/default_layout.dart';
 import 'package:flutter_inf_app/common/const/colors.dart';
+import 'package:flutter_inf_app/common/const/data.dart';
+import 'package:flutter_inf_app/common/view/root_tab.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  String userName = '';
+  String password = '';
 
   @override
   Widget build(BuildContext context) {
@@ -42,13 +52,17 @@ class LoginScreen extends StatelessWidget {
                 ),
                 CustomTextFormField(
                   hintText: '이메일을 입력해주세요.',
-                  onChanged: (value) {},
+                  onChanged: (String value) {
+                    userName = value;
+                  },
                 ),
                 const SizedBox(height: 16),
                 CustomTextFormField(
                   hintText: '비밀번호를 입력해주세요.',
                   obcureText: true,
-                  onChanged: (value) {},
+                  onChanged: (String value) {
+                    password = value;
+                  },
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
@@ -57,7 +71,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                   onPressed: () async {
                     // id:pw
-                    const rawString = 'test@gmail.com:testtest';
+                    String rawString = '$userName:$password';
                     // utf8, base64 인코딩
                     Codec<String, String> stringToBase64 = utf8.fuse(base64);
                     final token = stringToBase64.encode(rawString);
@@ -69,7 +83,20 @@ class LoginScreen extends StatelessWidget {
                         },
                       ),
                     );
+
                     print(resp.data);
+
+                    await storage.write(
+                        key: REFRESH_TOKEN_KEY,
+                        value: resp.data['refreshToken']);
+                    await storage.write(
+                        key: ACCESS_TOKE_KEY, value: resp.data['accessToken']);
+
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const RootTab(),
+                      ),
+                    );
                   },
                   child: const Text(
                     '로그인',
