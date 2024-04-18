@@ -80,7 +80,6 @@ class _IconText extends StatelessWidget {
   final IconData icon;
   final String lable;
   const _IconText({
-    super.key,
     required this.icon,
     required this.lable,
   });
