@@ -84,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     );
 
-                    print(resp.data);
+                    print('rest : $resp.data');
 
                     await storage.write(
                         key: REFRESH_TOKEN_KEY,
