@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inf_app/common/const/colors.dart';
+import 'package:flutter_inf_app/restaurant/model/restaurant_model.dart';
 
 class RestaurantCard extends StatelessWidget {
   // 이미지
@@ -9,24 +10,41 @@ class RestaurantCard extends StatelessWidget {
   // 가게 태그
   final List<String> tags;
   // 평점 갯수
-  final int ratingCount;
+  final int ratingsCount;
   // 배송 시간
   final int deliveryTime;
   // 배송비
   final int deliveryFee;
   // 가게 평점
-  final double rating;
+  final double ratings;
 
   const RestaurantCard({
     super.key,
     required this.image,
     required this.name,
     required this.tags,
-    required this.ratingCount,
+    required this.ratingsCount,
     required this.deliveryTime,
     required this.deliveryFee,
-    required this.rating,
+    required this.ratings,
   });
+
+  factory RestaurantCard.fromModel({required RestaurantModel model}) {
+    return RestaurantCard(
+      image: Image.network(
+        'https://picsum.photos/id${model.thumbUrl}/200/300',
+        width: double.infinity,
+        height: 200,
+        fit: BoxFit.cover,
+      ),
+      name: model.name,
+      tags: model.tags,
+      ratingsCount: model.ratingsCount,
+      deliveryTime: model.deliveryTime,
+      deliveryFee: model.deliveryFee,
+      ratings: model.ratings,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,10 +73,10 @@ class RestaurantCard extends StatelessWidget {
             const SizedBox(height: 8),
             Row(
               children: [
-                _IconText(icon: Icons.star_outlined, lable: '평점 $rating'),
+                _IconText(icon: Icons.star_outlined, lable: '평점 $ratings'),
                 const SizedBox(width: 8),
                 _IconText(
-                    icon: Icons.receipt_outlined, lable: '리뷰 $ratingCount'),
+                    icon: Icons.receipt_outlined, lable: '리뷰 $ratingsCount'),
                 const SizedBox(width: 8),
                 _IconText(
                     icon: Icons.timelapse_outlined,

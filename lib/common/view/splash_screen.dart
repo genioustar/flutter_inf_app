@@ -32,6 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void checkToken() async {
     final refreshToken = await storage.read(key: REFRESH_TOKEN_KEY);
     final accessToken = await storage.read(key: ACCESS_TOKE_KEY);
+    print('refreshToken : $refreshToken accessToken : $accessToken');
 
     final dio = Dio();
 
@@ -41,6 +42,11 @@ class _SplashScreenState extends State<SplashScreen> {
         options: Options(
           headers: {HttpHeaders.authorizationHeader: 'Bearer $refreshToken'},
         ),
+      );
+
+      await storage.write(
+        key: ACCESS_TOKE_KEY,
+        value: resp.data['accessToken'],
       );
 
       Navigator.of(context).pushAndRemoveUntil(
