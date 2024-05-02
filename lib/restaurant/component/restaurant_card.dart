@@ -17,6 +17,10 @@ class RestaurantCard extends StatelessWidget {
   final int deliveryFee;
   // 가게 평점
   final double ratings;
+  // 상세화면 여부
+  final bool isDetail;
+  // 상세화면 상세 내용
+  final String? detail;
 
   const RestaurantCard({
     super.key,
@@ -27,9 +31,14 @@ class RestaurantCard extends StatelessWidget {
     required this.deliveryTime,
     required this.deliveryFee,
     required this.ratings,
+    this.isDetail = false,
+    this.detail,
   });
 
-  factory RestaurantCard.fromModel({required RestaurantModel model}) {
+  factory RestaurantCard.fromModel({
+    required RestaurantModel model,
+    bool isDetail = false,
+  }) {
     return RestaurantCard(
       image: Image.network(
         'https://picsum.photos/id${model.thumbUrl}/200/300',
@@ -43,6 +52,7 @@ class RestaurantCard extends StatelessWidget {
       deliveryTime: model.deliveryTime,
       deliveryFee: model.deliveryFee,
       ratings: model.ratings,
+      isDetail: isDetail,
     );
   }
 
@@ -50,44 +60,54 @@ class RestaurantCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: image,
-        ),
+        if (isDetail) image,
+        if (!isDetail)
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: image,
+          ),
         const SizedBox(height: 8),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              name,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 20,
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: isDetail ? 16 : 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 20,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              tags.join(' · '),
-              style: const TextStyle(color: BODY_TEXT_COLOR, fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                _IconText(icon: Icons.star_outlined, lable: '평점 $ratings'),
-                const SizedBox(width: 8),
-                _IconText(
-                    icon: Icons.receipt_outlined, lable: '리뷰 $ratingsCount'),
-                const SizedBox(width: 8),
-                _IconText(
-                    icon: Icons.timelapse_outlined,
-                    lable: '배달시간 $deliveryTime분'),
-                const SizedBox(width: 8),
-                _IconText(
-                    icon: Icons.monetization_on_outlined,
-                    lable: deliveryFee == 0 ? '무료' : '배달비 $deliveryFee원'),
-              ],
-            ),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                tags.join(' · '),
+                style: const TextStyle(color: BODY_TEXT_COLOR, fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  _IconText(icon: Icons.star_outlined, lable: '평점 $ratings'),
+                  const SizedBox(width: 8),
+                  _IconText(
+                      icon: Icons.receipt_outlined, lable: '리뷰 $ratingsCount'),
+                  const SizedBox(width: 8),
+                  _IconText(
+                      icon: Icons.timelapse_outlined,
+                      lable: '배달시간 $deliveryTime분'),
+                  const SizedBox(width: 8),
+                  _IconText(
+                      icon: Icons.monetization_on_outlined,
+                      lable: deliveryFee == 0 ? '무료' : '배달비 $deliveryFee원'),
+                ],
+              ),
+              if (detail != null && isDetail)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Text(detail!),
+                )
+            ],
+          ),
         ),
       ],
     );
