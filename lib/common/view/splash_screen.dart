@@ -44,10 +44,14 @@ class _SplashScreenState extends State<SplashScreen> {
         ),
       );
 
+      print(resp.statusCode);
+
       await storage.write(
         key: ACCESS_TOKE_KEY,
         value: resp.data['accessToken'],
       );
+
+      if (!mounted) return; // Check if the widget is still in the widget tree
 
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
@@ -57,6 +61,9 @@ class _SplashScreenState extends State<SplashScreen> {
       );
     } catch (e) {
       print(e);
+
+      if (!mounted) return; // Check if the widget is still in the widget tree
+
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (_) => const LoginScreen(),

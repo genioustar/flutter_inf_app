@@ -93,8 +93,7 @@ class RestaurantCard extends StatelessWidget {
                       icon: Icons.receipt_outlined, lable: '리뷰 $ratingsCount'),
                   const SizedBox(width: 8),
                   _IconText(
-                      icon: Icons.timelapse_outlined,
-                      lable: '배달시간 $deliveryTime분'),
+                      icon: Icons.timelapse_outlined, lable: '$deliveryTime분'),
                   const SizedBox(width: 8),
                   _IconText(
                       icon: Icons.monetization_on_outlined,
