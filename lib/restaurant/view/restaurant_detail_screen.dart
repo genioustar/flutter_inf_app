@@ -1,21 +1,59 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inf_app/common/component/layout/default_layout.dart';
 import 'package:flutter_inf_app/product/component/product_card.dart';
 import 'package:flutter_inf_app/restaurant/component/restaurant_card.dart';
+import 'package:flutter_inf_app/restaurant/model/restaurant_detail_model.dart';
+
+import '../../common/const/data.dart';
 
 class RestaurantDetailScreen extends StatelessWidget {
-  const RestaurantDetailScreen({super.key});
+  final String id;
+  const RestaurantDetailScreen({
+    required this.id,
+    super.key,
+  });
+
+  Future<Map<String, dynamic>> getRestaurantDetail() async {
+    final dio = Dio();
+    final accessToken = await storage.read(key: ACCESS_TOKE_KEY);
+    return dio
+        .get('http://$ip/restaurant/$id',
+            options: Options(headers: {
+              HttpHeaders.authorizationHeader: 'Bearer $accessToken'
+            }))
+        .then(
+      (resp) {
+        // print(resp);
+        return resp.data;
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
       title: '불타는 떡복이',
-      widget: CustomScrollView(
-        slivers: [
-          randerTop(),
-          renderLable(),
-          renderProducts(),
-        ],
+      widget: FutureBuilder<Map<String, dynamic>>(
+        future: getRestaurantDetail(),
+        builder: (_, AsyncSnapshot<Map<String, dynamic>> snapshot) {
+          print(snapshot.data);
+          if (!snapshot.hasData) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          final item = RestaurantDetailModel.fromJson(json: snapshot.data!);
+          return CustomScrollView(
+            slivers: [
+              randerTop(item: item),
+              renderLable(),
+              renderProducts(products: item.products),
+            ],
+          );
+        },
       ),
     );
   }
@@ -32,35 +70,27 @@ class RestaurantDetailScreen extends StatelessWidget {
     );
   }
 
-  SliverPadding renderProducts() {
+  SliverPadding renderProducts(
+      {required List<RestaurantProductModel> products}) {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       sliver: SliverList(
           delegate: SliverChildBuilderDelegate(
         (context, index) {
-          return const Padding(
-            padding: EdgeInsets.only(top: 16.0),
-            child: ProductCard(),
+          final model = products[index];
+          return Padding(
+            padding: const EdgeInsets.only(top: 16.0),
+            child: ProductCard.fromModel(model: model),
           );
         },
-        childCount: 10,
+        childCount: products.length,
       )),
     );
   }
 
-  SliverToBoxAdapter randerTop() {
+  SliverToBoxAdapter randerTop({required RestaurantDetailModel item}) {
     return SliverToBoxAdapter(
-      child: RestaurantCard(
-        image: Image.asset('asset/img/food/ddeok_bok_gi.jpg'),
-        name: '불타는 떡복이',
-        tags: const ['한식', '분식', '야식'],
-        ratingsCount: 100,
-        deliveryTime: 30,
-        deliveryFee: 3000,
-        ratings: 4.76,
-        isDetail: true,
-        detail: '불타는 떡볶이는 매운맛을 좋아하는 사람들에게 추천합니다.',
-      ),
+      child: RestaurantCard.fromModel(model: item, isDetail: true),
     );
   }
 }

@@ -1,9 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_inf_app/common/const/colors.dart';
+import 'package:flutter_inf_app/restaurant/model/restaurant_detail_model.dart';
 
 class ProductCard extends StatelessWidget {
-  const ProductCard({super.key});
+  final String name;
+  final String detail;
+  final int price;
+  final String imgUrl;
+
+  const ProductCard({
+    super.key,
+    required this.name,
+    required this.detail,
+    required this.price,
+    required this.imgUrl,
+  });
+
+  factory ProductCard.fromModel({
+    required RestaurantProductModel model,
+  }) {
+    return ProductCard(
+      name: model.name,
+      detail: model.detail,
+      price: model.price,
+      imgUrl: model.imgUrl,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,8 +37,8 @@ class ProductCard extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
-              'asset/img/food/ddeok_bok_gi.jpg',
+            child: Image.network(
+              'https://picsum.photos/id$imgUrl/200/300',
               width: 110,
               height: 110,
               fit: BoxFit.cover,
@@ -24,31 +47,31 @@ class ProductCard extends StatelessWidget {
           const SizedBox(
             width: 16,
           ),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '떡볶이',
-                  style: TextStyle(
+                  name,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 Text(
-                  '전통 떡볶이의 정석\n매콤한 맛이 일품입니다.',
+                  detail,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
                     color: BODY_TEXT_COLOR,
                   ),
                 ),
                 Text(
-                  '4,500원',
+                  '$price원',
                   textAlign: TextAlign.end,
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 12,
                       color: PRIMARY_COLOR,
                       fontWeight: FontWeight.w500),

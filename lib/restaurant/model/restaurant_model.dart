@@ -23,9 +23,9 @@ class RestaurantModel {
     required this.deliveryFee,
   });
 
-//factory constructor를 사용한 api로 수신한 데이터를 변환
+//factory constructor를 사용한 restaurant정보 api로 수신한 데이터를 변환
   factory RestaurantModel.fromJson({required Map<String, dynamic> json}) {
-    //json 데이터를 처리할 경우 데이터 형식은 Map<String, dynamic>으로 처리
+    //암기!!! json 데이터를 처리할 경우 데이터 형식은 Map<String, dynamic>으로 처리
     return RestaurantModel(
       id: json['id'],
       name: json['name'],
