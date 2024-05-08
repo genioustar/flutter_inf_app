@@ -42,7 +42,7 @@ class RestaurantCard extends StatelessWidget {
   }) {
     return RestaurantCard(
       image: Image.network(
-        'https://picsum.photos/id${model.thumbUrl}/200/300',
+        model.thumbUrl,
         width: double.infinity,
         height: 200,
         fit: BoxFit.cover,
