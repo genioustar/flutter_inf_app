@@ -81,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         key: REFRESH_TOKEN_KEY,
                         value: resp.data['refreshToken']);
                     await storage.write(
-                        key: ACCESS_TOKE_KEY, value: resp.data['accessToken']);
+                        key: ACCESS_TOKEN_KEY, value: resp.data['accessToken']);
 
                     Navigator.of(context).push(
                       MaterialPageRoute(

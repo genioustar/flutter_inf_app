@@ -1,11 +1,11 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inf_app/common/component/layout/default_layout.dart';
+import 'package:flutter_inf_app/common/dio/dio.dart';
 import 'package:flutter_inf_app/product/component/product_card.dart';
 import 'package:flutter_inf_app/restaurant/component/restaurant_card.dart';
 import 'package:flutter_inf_app/restaurant/model/restaurant_detail_model.dart';
+import 'package:flutter_inf_app/restaurant/repository/restaurant_repository.dart';
 
 import '../../common/const/data.dart';
 
@@ -16,41 +16,39 @@ class RestaurantDetailScreen extends StatelessWidget {
     super.key,
   });
 
-  Future<Map<String, dynamic>> getRestaurantDetail() async {
+  Future<RestaurantDetailModel> getRestaurantDetail() async {
     final dio = Dio();
-    final accessToken = await storage.read(key: ACCESS_TOKE_KEY);
-    return dio
-        .get('http://$ip/restaurant/$id',
-            options: Options(headers: {
-              HttpHeaders.authorizationHeader: 'Bearer $accessToken'
-            }))
-        .then(
-      (resp) {
-        // print(resp);
-        return resp.data;
-      },
+    dio.interceptors.add(
+      CustomInterceptor(storage: storage),
     );
+    final repository =
+        RestaurantRepository(dio, baseUrl: 'http://$ip/restaurant');
+
+    return repository.getRestaurantDetail(sid: id);
   }
 
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
       title: '불타는 떡복이',
-      widget: FutureBuilder<Map<String, dynamic>>(
+      widget: FutureBuilder<RestaurantDetailModel>(
         future: getRestaurantDetail(),
-        builder: (_, AsyncSnapshot<Map<String, dynamic>> snapshot) {
-          print(snapshot.data);
+        builder: (_, AsyncSnapshot<RestaurantDetailModel> snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(snapshot.error.toString()),
+            );
+          }
           if (!snapshot.hasData) {
             return const Center(
               child: CircularProgressIndicator(),
             );
           }
-          final item = RestaurantDetailModel.fromJson(snapshot.data!);
           return CustomScrollView(
             slivers: [
-              randerTop(item: item),
+              randerTop(item: snapshot.data!),
               renderLable(),
-              renderProducts(products: item.products),
+              renderProducts(products: snapshot.data!.products),
             ],
           );
         },
