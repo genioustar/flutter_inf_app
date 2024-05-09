@@ -15,7 +15,7 @@ class CustomInterceptor extends Interceptor {
   @override
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
-    print('[REQUEST] ${options.method} ${options.path}');
+    print('[REQUEST] ${options.method} ${options.uri}');
 
     // restaurant_repository.dart에서 accessToken이 true일때만 실행
     if (options.headers['accessToken'] == 'true') {
@@ -32,6 +32,12 @@ class CustomInterceptor extends Interceptor {
   }
 
   //2) 응답을 받을때
+  @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
+    print('[RESPONSE] ${response.statusCode} ${response.requestOptions.uri}');
+    return super.onResponse(response, handler);
+  }
+
   //3) 에러가 발생했을때
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
