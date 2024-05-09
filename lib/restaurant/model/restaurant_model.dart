@@ -1,5 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../common/utils/data_utils.dart';
+
 part 'restaurant_model.g.dart';
 
 enum RestaurantPriceRange { sale, normal, expensive }
@@ -9,7 +11,7 @@ class RestaurantModel {
   final String id;
   final String name;
   @JsonKey(
-    fromJson: pathToUrl,
+    fromJson: DataUtils.pathToUrl,
   )
   final String thumbUrl;
   final List<String> tags;
@@ -34,11 +36,6 @@ class RestaurantModel {
   // JSON에서 RestaurantModel 객체로 변환하는 팩토리 생성자
   factory RestaurantModel.fromJson(Map<String, dynamic> json) =>
       _$RestaurantModelFromJson(json);
-
-  // 이미지 경로를 URL로 변환하는 메서드
-  static String pathToUrl(String path) {
-    return 'https://picsum.photos/id$path/200/300';
-  }
 
   // RestaurantModel 객체를 JSON으로 변환하는 메서드
   Map<String, dynamic> toJson() => _$RestaurantModelToJson(this);
