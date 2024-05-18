@@ -1,11 +1,21 @@
 import 'package:dio/dio.dart'
     hide Headers; // Headers가 retrofit에서 이미 사용되고 있어서 충돌을 방지하기 위해 hide 사용
+import 'package:flutter_inf_app/common/const/data.dart';
+import 'package:flutter_inf_app/common/dio/dio.dart';
 import 'package:flutter_inf_app/common/model/cursor_pagination_model.dart';
 import 'package:flutter_inf_app/restaurant/model/restaurant_detail_model.dart';
 import 'package:flutter_inf_app/restaurant/model/restaurant_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retrofit/retrofit.dart';
 
 part 'restaurant_repository.g.dart';
+
+final restaurantRepositoryProvider = Provider<RestaurantRepository>((ref) {
+  final dio = ref.watch(dioProvider);
+  final repository =
+      RestaurantRepository(dio, baseUrl: 'http://$ip/restaurant');
+  return repository;
+});
 
 // API요청을 보내고 받은다음에 <>안에 있는 모델로 변환해서 반환하는 클래스
 @RestApi()

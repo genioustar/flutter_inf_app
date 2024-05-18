@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inf_app/common/component/layout/default_layout.dart';
-import 'package:flutter_inf_app/common/dio/dio.dart';
 import 'package:flutter_inf_app/product/component/product_card.dart';
 import 'package:flutter_inf_app/restaurant/component/restaurant_card.dart';
 import 'package:flutter_inf_app/restaurant/model/restaurant_detail_model.dart';
 import 'package:flutter_inf_app/restaurant/repository/restaurant_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../common/const/data.dart';
 
 class RestaurantDetailScreen extends ConsumerWidget {
   final String id;
@@ -17,10 +14,7 @@ class RestaurantDetailScreen extends ConsumerWidget {
   });
 
   Future<RestaurantDetailModel> getRestaurantDetail(WidgetRef ref) async {
-    final dio = ref.watch(dioProvider);
-    final repository =
-        RestaurantRepository(dio, baseUrl: 'http://$ip/restaurant');
-
+    final repository = ref.watch(restaurantRepositoryProvider);
     return repository.getRestaurantDetail(sid: id);
   }
 
