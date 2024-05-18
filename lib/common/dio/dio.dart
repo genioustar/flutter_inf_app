@@ -35,6 +35,7 @@ class CustomInterceptor extends Interceptor {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     print('[RESPONSE] ${response.statusCode} ${response.requestOptions.uri}');
+    // print('[RESPONSE] ${response.data}');
     return super.onResponse(response, handler);
   }
 

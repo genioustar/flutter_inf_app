@@ -20,7 +20,6 @@ class RestaurantModel {
   final int ratingsCount;
   final int deliveryTime;
   final int deliveryFee;
-
   RestaurantModel({
     required this.id,
     required this.name,
