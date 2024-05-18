@@ -5,18 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inf_app/common/component/layout/default_layout.dart';
 import 'package:flutter_inf_app/common/const/colors.dart';
 import 'package:flutter_inf_app/common/const/data.dart';
+import 'package:flutter_inf_app/common/secure_storage/secure_storage.dart';
 import 'package:flutter_inf_app/common/view/root_tab.dart';
 import 'package:flutter_inf_app/user/view/login_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // 앱에 처음 진입하면 다양한 정보를 로딩하고 어디로 분기해줄지 판단하는 화면
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     // TODO: implement initState
@@ -26,10 +28,14 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void deleteToken() async {
+    //함수 내부에서만 사용됨으로 사용직전에 선언하기!
+    // ref를 어떻게 쓸수있음?? stateful widget이기 때문에 사용가능
+    final storage = ref.read(secureStorageProvider);
     await storage.deleteAll();
   }
 
   void checkToken() async {
+    final storage = ref.read(secureStorageProvider);
     final refreshToken = await storage.read(key: REFRESH_TOKEN_KEY);
     final accessToken = await storage.read(key: ACCESS_TOKEN_KEY);
     print('refreshToken : $refreshToken accessToken : $accessToken');

@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inf_app/common/const/data.dart';
 import 'package:flutter_inf_app/common/dio/dio.dart';
@@ -6,16 +5,13 @@ import 'package:flutter_inf_app/restaurant/component/restaurant_card.dart';
 import 'package:flutter_inf_app/restaurant/model/restaurant_model.dart';
 import 'package:flutter_inf_app/restaurant/repository/restaurant_repository.dart';
 import 'package:flutter_inf_app/restaurant/view/restaurant_detail_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RestaurantScreen extends StatelessWidget {
+class RestaurantScreen extends ConsumerWidget {
   const RestaurantScreen({super.key});
 
-  Future<List<RestaurantModel>> paginationRestaurant() async {
-    final dio = Dio();
-    // api 호출전에 뭘해야 될지를 정의한 interceptor를 dio에 추가
-    dio.interceptors.add(
-      CustomInterceptor(storage: storage),
-    );
+  Future<List<RestaurantModel>> paginationRestaurant(WidgetRef ref) async {
+    final dio = ref.watch(dioProvider);
 
     final repository =
         RestaurantRepository(dio, baseUrl: 'http://$ip/restaurant');
@@ -24,12 +20,12 @@ class RestaurantScreen extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // scaffold가 없어도 되는 이유는 DefaultLayout에서 scaffold를 사용했기 때문
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: FutureBuilder<List<RestaurantModel>>(
-        future: paginationRestaurant(),
+        future: paginationRestaurant(ref),
         builder: (context, AsyncSnapshot<List<RestaurantModel>> snapshot) {
           if (snapshot.hasError) {
             return Center(

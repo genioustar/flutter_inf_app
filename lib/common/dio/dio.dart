@@ -2,7 +2,26 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_inf_app/common/const/data.dart';
+import 'package:flutter_inf_app/common/secure_storage/secure_storage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:riverpod/riverpod.dart';
+
+// dioProvider 정의 - Dio 인스턴스를 제공하는 Provider
+final dioProvider = Provider<Dio>((ref) {
+  // Dio 인스턴스 생성
+  final dio = Dio();
+
+  // secureStorageProvider의 상태를 구독
+  final secureStorage = ref.watch(secureStorageProvider);
+
+  // Dio 인스턴스에 CustomInterceptor 추가
+  dio.interceptors.add(CustomInterceptor(
+    storage: secureStorage,
+  ));
+
+  // 설정된 Dio 인스턴스 반환
+  return dio;
+});
 
 class CustomInterceptor extends Interceptor {
   //accesstoken을 스토리지에서 꺼내오기 위한 변수
