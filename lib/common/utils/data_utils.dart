@@ -3,4 +3,8 @@ class DataUtils {
   static String pathToUrl(String path) {
     return 'https://picsum.photos/id$path/200/300';
   }
+
+  static listPathsToUrls(List<String> paths) {
+    return paths.map((e) => pathToUrl(e)).toList();
+  }
 }
