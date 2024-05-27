@@ -1,7 +1,19 @@
 import 'package:flutter_inf_app/common/model/cursor_pagination_model.dart';
 import 'package:flutter_inf_app/common/model/pagination_params.dart';
+import 'package:flutter_inf_app/restaurant/model/restaurant_model.dart';
 import 'package:flutter_inf_app/restaurant/repository/restaurant_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final restaurantDetailProvider =
+    Provider.family<RestaurantModel?, String>((ref, id) {
+  final state = ref.watch(restaurantProvider);
+
+  if (state is! CursorPagination) {
+    return null;
+  }
+
+  return state.data.firstWhere((element) => element.id == id);
+});
 
 // restaurantProvider 정의 - RestaurantStateNotifier를 제공하는 StateNotifierProvider
 final restaurantProvider =
@@ -26,7 +38,7 @@ class RestaurantStateNotifier extends StateNotifier<CursorPaginationBase> {
   }
 
   // pagination 메서드 - 비동기 방식으로 데이터를 로드하고 상태를 업데이트
-  void pagination({
+  Future<void> pagination({
     int fetchCount = 20,
     // true로 설정하면 기존 데이터를 유지하나, 추가 데이터를 가져옴, false면 데이터는 유지한 상태에서 새로고침
     bool fetchMore = false,
@@ -105,7 +117,7 @@ class RestaurantStateNotifier extends StateNotifier<CursorPaginationBase> {
       if (state is CursorPaginationFetchingMore) {
         final pState = state as CursorPaginationFetchingMore;
         // 새로운 데이터를 추가해서 새로운 상태를 만듬
-        state = resp.copywith(
+        state = resp.copyWith(
           data: [
             ...pState.data,
             ...resp.data,
@@ -117,5 +129,27 @@ class RestaurantStateNotifier extends StateNotifier<CursorPaginationBase> {
     } catch (e) {
       state = CursorPaginationError(message: e.toString());
     }
+  }
+
+  void getDetail({
+    required String id,
+  }) async {
+    // 만약에 아직 데이터가 하나도 없는 상태라면(CursorPagination이 아니라면) 데이터를 가져옴
+    if (state is! CursorPagination) {
+      await pagination();
+    }
+    // 서버가 문제여서 데이터를 가져오지 못했을때
+    if (state is! CursorPagination) {
+      return;
+    }
+
+    final pState = state as CursorPagination;
+    final resp = await repository.getRestaurantDetail(sid: id);
+
+    state = pState.copyWith(
+      data: pState.data
+          .map<RestaurantModel>((e) => e.id == id ? resp : e)
+          .toList(),
+    );
   }
 }
