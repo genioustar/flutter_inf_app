@@ -115,4 +115,6 @@ class PaginationProvider<
       state = CursorPaginationError(message: e.toString());
     }
   }
+
+  void paginate({required bool forceRefetch}) {}
 }
