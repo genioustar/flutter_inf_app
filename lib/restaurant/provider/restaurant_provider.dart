@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter_inf_app/common/model/cursor_pagination_model.dart';
 import 'package:flutter_inf_app/common/provider/pagination_provider.dart';
 import 'package:flutter_inf_app/restaurant/model/restaurant_model.dart';
@@ -12,7 +13,7 @@ final restaurantDetailProvider =
     return null;
   }
 
-  return state.data.firstWhere((element) => element.id == id);
+  return state.data.firstWhereOrNull((element) => element.id == id);
 });
 
 // restaurantProvider 정의 - RestaurantStateNotifier를 제공하는 StateNotifierProvider
@@ -47,10 +48,17 @@ class RestaurantStateNotifier
     final pState = state as CursorPagination;
     final resp = await repository.getRestaurantDetail(sid: id);
 
-    state = pState.copyWith(
-      data: pState.data
-          .map<RestaurantModel>((e) => e.id == id ? resp : e)
-          .toList(),
-    );
+    // 20개의 restaurnt 데이터만 가져왔어서 21번째 restaurant의 상품 데이터가 없다면 추가 요청해서 state에 추가하고, 있다면 기존 데이터를 업데이트
+    if (pState.data.where((e) => e.id == id).isEmpty) {
+      state = pState.copyWith(
+        data: <RestaurantModel>[...pState.data, resp],
+      );
+    } else {
+      state = pState.copyWith(
+        data: pState.data
+            .map<RestaurantModel>((e) => e.id == id ? resp : e)
+            .toList(),
+      );
+    }
   }
 }
